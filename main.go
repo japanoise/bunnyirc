@@ -3,7 +3,9 @@ package main
 import (
 	"gopkg.in/sorcix/irc.v2"
 	"fmt"
+	"flag"
 	"os"
+	"os/user"
 	"bufio"
 	"crypto/tls"
 	"log"
@@ -49,7 +51,7 @@ func auth(conn *irc.Conn, nick, user string) {
 	for {
 		msg, _ := conn.Decode()
 		printmsg(msg)
-		if msg.Params[0] == "AUTH" {
+		if msg.Command == "NOTICE" {
 			conn.Encode(irc.ParseMessage(fmt.Sprintf("NICK %s",nick)))
 			conn.Encode(irc.ParseMessage(fmt.Sprintf("USER %s * * :%s",user,user)))
 			return
@@ -58,27 +60,29 @@ func auth(conn *irc.Conn, nick, user string) {
 }
 
 func main() {
-	usetls := false
-	server := "irc.rizon.net"
-	port := "6660"
-	nick := "Tewimeleon"
-	user := "Tewi"
-	details := fmt.Sprintf("%s:%s",server,port)
+	usetls := flag.Bool("z",false,"Use TLS")
+	server := flag.String("s","chat.freenode.net","Server to connect to")
+	port := flag.Int("p",6667,"Port to use")
+	current, _ := user.Current()
+	nick := flag.String("n",current.Username,"Nickname")
+	user := flag.String("u",current.Username,"Username")
+	flag.Parse()
+	details := fmt.Sprint(*server,":",*port)
 	var conn *irc.Conn
 	var err error
-	if usetls {
+	if *usetls {
 		tconn, err := tls.Dial("tcp", details, &tls.Config{})
 		if err != nil {
-			log.Fatalln("Could not connect to IRC server")
+			log.Fatalln("Could not connect to IRC server; ", err.Error())
 		}
 		conn = irc.NewConn(tconn)
 	} else {
 		conn, err = irc.Dial(details)
 		if err != nil {
-			log.Fatalln("Could not connect to IRC server")
+			log.Fatalln("Could not connect to IRC server; ", err.Error())
 		}
 	}
-	auth(conn,nick,user)
+	auth(conn,*nick,*user)
 	go printloop(conn)
 	readloop(conn)
 	conn.Close()
