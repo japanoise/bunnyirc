@@ -17,6 +17,18 @@ func printmsg(msg *irc.Message){
 		fmt.Printf("%s/%s: %s\n",msg.Prefix.Name,msg.Params[0],msg.Params[1])
 	case "NOTICE":
 		fmt.Printf("Notice from %s to %s: %s\n",msg.Prefix.Name,msg.Params[0],msg.Params[1])
+	case "001":
+		fallthrough
+	case "002":
+		fallthrough
+	case "003":
+		fallthrough
+	case "372":
+		fallthrough
+	case "375":
+		fallthrough
+	case "376":
+		fmt.Println(msg.Params[1])
 	case "QUIT":
 		fmt.Printf("%s has quit (%s)\n",msg.Prefix.Name,msg.Params[0])
 	default:
