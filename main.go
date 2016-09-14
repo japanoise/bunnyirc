@@ -8,7 +8,10 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"strings"
 )
+
+var target string
 
 func printmsg(msg *irc.Message) {
 	switch msg.Command {
@@ -37,16 +40,35 @@ func printmsg(msg *irc.Message) {
 	}
 }
 
+func Parse(text string) (string, bool) {
+	if text[0] == '/' {
+		words := strings.Split(text, " ")
+		if words[0] == "/t" && len(words) > 1 {
+			target = words[1]
+			return "", false
+		}
+		if words[0] == "/r" && len(words) > 1 {
+			return strings.Join(words[1:], " "), true
+		}
+	}
+	return strings.Replace(fmt.Sprintf("PRIVMSG %s :%s", target, text), "\n", "", -1), target != ""
+}
+
+func Command(client *Client, text string) {
+	send, dosend := Parse(text)
+	if dosend {
+		msg := irc.ParseMessage(send)
+		if msg != nil {
+			client.Send(msg)
+		}
+	}
+}
+
 func readloop(client *Client) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		text, _ := reader.ReadString('\n')
-		msg := irc.ParseMessage(text)
-		if msg == nil {
-			fmt.Println("Badly formatted message.")
-		} else {
-			client.Send(msg)
-		}
+		Command(client, text)
 	}
 }
 
@@ -69,7 +91,6 @@ func main() {
 	if err != nil {
 		log.Fatalln("Could not connect to IRC server; ", err.Error())
 	}
-	/*var target string*/
 	client.Auth()
 	go printloop(client)
 	readloop(client)
