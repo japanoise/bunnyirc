@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"crypto/tls"
 	"flag"
 	"fmt"
 	"gopkg.in/sorcix/irc.v2"
@@ -38,7 +37,7 @@ func printmsg(msg *irc.Message) {
 	}
 }
 
-func readloop(conn *irc.Conn) {
+func readloop(client *Client) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		text, _ := reader.ReadString('\n')
@@ -46,60 +45,33 @@ func readloop(conn *irc.Conn) {
 		if msg == nil {
 			fmt.Println("Badly formatted message.")
 		} else {
-			conn.Encode(msg)
+			client.Send(msg)
 		}
 	}
 }
 
-func printloop(conn *irc.Conn) {
+func printloop(client *Client) {
 	for {
-		msg, _ := conn.Decode()
+		msg := client.Receive()
 		printmsg(msg)
-		if msg.Command == "PING" {
-			pong := fmt.Sprintf("PONG :%s", msg.Params[0])
-			fmt.Println(pong)
-			conn.Encode(irc.ParseMessage(pong))
-		}
-	}
-}
-
-func auth(conn *irc.Conn, nick, user string) {
-	for {
-		msg, _ := conn.Decode()
-		printmsg(msg)
-		if msg.Command == "NOTICE" {
-			conn.Encode(irc.ParseMessage(fmt.Sprintf("NICK %s", nick)))
-			conn.Encode(irc.ParseMessage(fmt.Sprintf("USER %s * * :%s", user, user)))
-			return
-		}
 	}
 }
 
 func main() {
-	usetls := flag.Bool("z", false, "Use TLS")
-	server := flag.String("s", "chat.freenode.net", "Server to connect to")
-	port := flag.Int("p", 6667, "Port to use")
 	current, _ := user.Current()
 	nick := flag.String("n", current.Username, "Nickname")
 	user := flag.String("u", current.Username, "Username")
+	server := flag.String("s", "chat.freenode.net", "Server to connect to")
+	port := flag.Int("p", 6667, "Port to use")
+	usetls := flag.Bool("z", false, "Use TLS")
 	flag.Parse()
-	details := fmt.Sprint(*server, ":", *port)
-	var conn *irc.Conn
-	var err error
-	if *usetls {
-		tconn, err := tls.Dial("tcp", details, &tls.Config{})
-		if err != nil {
-			log.Fatalln("Could not connect to IRC server; ", err.Error())
-		}
-		conn = irc.NewConn(tconn)
-	} else {
-		conn, err = irc.Dial(details)
-		if err != nil {
-			log.Fatalln("Could not connect to IRC server; ", err.Error())
-		}
+	client, err := New(*usetls, fmt.Sprint(*server, ":", *port), *nick, *user)
+	if err != nil {
+		log.Fatalln("Could not connect to IRC server; ", err.Error())
 	}
-	auth(conn, *nick, *user)
-	go printloop(conn)
-	readloop(conn)
-	conn.Close()
+	/*var target string*/
+	client.Auth()
+	go printloop(client)
+	readloop(client)
+	client.Close()
 }
