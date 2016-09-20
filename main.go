@@ -18,7 +18,7 @@ func printmsg(msg *irc.Message) {
 	case "PRIVMSG":
 		fmt.Printf("%s/%s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
 	case "MODE":
-		fmt.Printf("%s sets mode %s on %s\n", msg.Prefix.Name, msg.Params[1], msg.Params[0])
+		fmt.Printf("%s sets mode %s\n", msg.Prefix.Name, strings.Join(msg.Params[0:], " "))
 	case "NOTICE":
 		fmt.Printf("Notice from %s to %s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
 	case "001":
