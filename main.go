@@ -15,6 +15,8 @@ var target string
 
 func printmsg(msg *irc.Message) {
 	switch msg.Command {
+	case "JOIN":
+		fmt.Printf("%s has joined %s\n", msg.Prefix.Name, msg.Params[0])
 	case "PRIVMSG":
 		fmt.Printf("%s/%s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
 	case "MODE":
