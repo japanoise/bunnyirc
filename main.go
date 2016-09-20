@@ -50,6 +50,9 @@ func Parse(text string) (string, bool) {
 		if words[0] == "/r" && len(words) > 1 {
 			return strings.Join(words[1:], " "), true
 		}
+		if words[0] == "/j" && len(words) > 1 {
+			return fmt.Sprintf("JOIN %s", words[1]), true
+		}
 	}
 	return strings.Replace(fmt.Sprintf("PRIVMSG %s :%s", target, text), "\n", "", -1), target != ""
 }
