@@ -3,11 +3,11 @@
 IRC! Internet relay chat! It's how hackers communicate when they don't 
 wanna be overheard.
 
-## Usage of ./bunnyirc:
+## Usage of bunnyirc:
 
   -n string
 
-    	Nickname (default "chameleon")
+    	Nickname (defaults to your login name)
 
   -p int
 
@@ -19,6 +19,8 @@ wanna be overheard.
 
   -u string
 
-    	Username (default "chameleon")
+    	Username (defaults to your login name)
 
-  -z	Use TLS
+  -z	
+  
+      	Use TLS
