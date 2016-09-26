@@ -58,8 +58,11 @@ func Parse(text string) (string, bool) {
 		if words[0] == "/m" && len(words) > 2 {
 			return fmt.Sprintf("PRIVMSG %s :%s", words[1], strings.Join(words[2:], " ")), true
 		}
-		if words[0] == "/n" && len(words) > 2 {
+		if words[0] == "/N" && len(words) > 2 {
 			return fmt.Sprintf("NOTICE %s :%s", words[1], strings.Join(words[2:], " ")), true
+		}
+		if words[0] == "/n" && len(words) > 1 {
+			return fmt.Sprintf("NICK %s", words[1]), true
 		}
 	}
 	return strings.Replace(fmt.Sprintf("PRIVMSG %s :%s", target, text), "\n", "", -1), target != ""
