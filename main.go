@@ -38,7 +38,7 @@ func printmsg(msg *irc.Message) {
 	case "QUIT":
 		fmt.Printf("%s has quit (%s)\n", msg.Prefix.Name, msg.Params[0])
 	default:
-		fmt.Println(msg.String())
+		fmt.Println("RAW:", msg.String())
 	}
 }
 
