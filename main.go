@@ -7,6 +7,7 @@ import (
 	"gopkg.in/sorcix/irc.v2"
 	"log"
 	"os"
+	"io"
 	"os/user"
 	"strings"
 )
@@ -68,28 +69,42 @@ func Parse(text string) (string, bool) {
 	return strings.Replace(fmt.Sprintf("PRIVMSG %s :%s", target, text), "\n", "", -1), target != ""
 }
 
-func Command(client *Client, text string) {
+func Command(client *Client, text string) bool {
 	send, dosend := Parse(text)
 	if dosend {
 		msg := irc.ParseMessage(send)
 		if msg != nil {
 			client.Send(msg)
+			return msg.Command == "QUIT"
 		}
 	}
+	return false
 }
 
 func readloop(client *Client) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		text, _ := reader.ReadString('\n')
-		Command(client, text)
+		text, err := reader.ReadString('\n')
+		if err == io.EOF {
+			return
+		}
+		if Command(client, text) {
+			return
+		}
 	}
 }
 
 func printloop(client *Client) {
 	for {
-		msg := client.Receive()
+		msg, err := client.Receive()
+		if err != nil {
+			fmt.Println("Output loop closing:",err)
+			return
+		}
 		printmsg(msg)
+		if msg.Command == "ERROR" {
+			return
+		}
 	}
 }
 
@@ -108,5 +123,4 @@ func main() {
 	client.Auth()
 	go printloop(client)
 	readloop(client)
-	client.Close()
 }

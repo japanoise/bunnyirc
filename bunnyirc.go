@@ -33,13 +33,13 @@ func (c Client) Send(msg *irc.Message) {
 	c.Conn.Encode(msg)
 }
 
-func (c Client) Receive() *irc.Message {
-	msg, _ := c.Conn.Decode()
+func (c Client) Receive() (*irc.Message,error) {
+	msg, err := c.Conn.Decode()
 	if msg.Command == "PING" {
 		pong := fmt.Sprintf("PONG :%s", msg.Params[0])
 		c.Conn.Encode(irc.ParseMessage(pong))
 	}
-	return msg
+	return msg, err
 }
 
 func (c Client) Close() {
