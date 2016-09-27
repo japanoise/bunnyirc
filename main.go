@@ -52,24 +52,18 @@ func Parse(text string) (string, bool) {
 			} else {
 				return "QUIT :Bunnyirc", true
 			}
-		}
-		if words[0] == "/t" && len(words) > 1 {
+		} else if words[0] == "/t" && len(words) > 1 {
 			target = words[1]
 			return "", false
-		}
-		if words[0] == "/r" && len(words) > 1 {
+		} else if words[0] == "/r" && len(words) > 1 {
 			return strings.Join(words[1:], " "), true
-		}
-		if words[0] == "/j" && len(words) > 1 {
+		} else if words[0] == "/j" && len(words) > 1 {
 			return fmt.Sprintf("JOIN %s", words[1]), true
-		}
-		if words[0] == "/m" && len(words) > 2 {
+		} else if words[0] == "/m" && len(words) > 2 {
 			return fmt.Sprintf("PRIVMSG %s :%s", words[1], strings.Join(words[2:], " ")), true
-		}
-		if words[0] == "/N" && len(words) > 2 {
+		} else if words[0] == "/N" && len(words) > 2 {
 			return fmt.Sprintf("NOTICE %s :%s", words[1], strings.Join(words[2:], " ")), true
-		}
-		if words[0] == "/n" && len(words) > 1 {
+		} else if words[0] == "/n" && len(words) > 1 {
 			return fmt.Sprintf("NICK %s", words[1]), true
 		}
 	}
