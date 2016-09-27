@@ -5,9 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"gopkg.in/sorcix/irc.v2"
+	"io"
 	"log"
 	"os"
-	"io"
 	"os/user"
 	"strings"
 )
@@ -49,7 +49,7 @@ func Parse(text string) (string, bool) {
 		if words[0] == "/q" {
 			if len(words) > 1 {
 				return fmt.Sprintf("QUIT :%s", strings.Join(words[1:], " ")), true
-			}else{
+			} else {
 				return "QUIT :Bunnyirc", true
 			}
 		}
@@ -105,7 +105,7 @@ func printloop(client *Client) {
 	for {
 		msg, err := client.Receive()
 		if err != nil {
-			fmt.Println("Output loop closing:",err)
+			fmt.Println("Output loop closing:", err)
 			return
 		}
 		printmsg(msg)
