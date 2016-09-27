@@ -46,6 +46,13 @@ func printmsg(msg *irc.Message) {
 func Parse(text string) (string, bool) {
 	if text[0] == '/' {
 		words := strings.Split(text, " ")
+		if words[0] == "/q" {
+			if len(words) > 1 {
+				return fmt.Sprintf("QUIT :%s", strings.Join(words[1:], " ")), true
+			}else{
+				return "QUIT :Bunnyirc", true
+			}
+		}
 		if words[0] == "/t" && len(words) > 1 {
 			target = words[1]
 			return "", false
@@ -66,11 +73,11 @@ func Parse(text string) (string, bool) {
 			return fmt.Sprintf("NICK %s", words[1]), true
 		}
 	}
-	return strings.Replace(fmt.Sprintf("PRIVMSG %s :%s", target, text), "\n", "", -1), target != ""
+	return fmt.Sprintf("PRIVMSG %s :%s", target, text), target != ""
 }
 
 func Command(client *Client, text string) bool {
-	send, dosend := Parse(text)
+	send, dosend := Parse(strings.Replace(text, "\n", "", -1))
 	if dosend {
 		msg := irc.ParseMessage(send)
 		if msg != nil {
