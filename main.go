@@ -38,6 +38,14 @@ func printmsg(msg *irc.Message) {
 		fmt.Println(msg.Params[1])
 	case "QUIT":
 		fmt.Printf("%s has quit (%s)\n", msg.Prefix.Name, msg.Params[0])
+	case "CTCP":
+		if strings.HasPrefix(msg.Params[1], "ACTION") {
+			fmt.Printf("%s: * %s %s\n", msg.Params[0], msg.Prefix.Name, msg.Params[1][7:])
+		} else {
+			fmt.Printf("CTCP request from %s to %s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
+		}
+	case "CTCPREPLY":
+		fmt.Printf("CTCP reply from %s to %s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
 	default:
 		fmt.Println("RAW:", msg.String())
 	}
@@ -61,14 +69,18 @@ func Parse(text string) (string, bool) {
 			return fmt.Sprintf("JOIN %s", words[1]), true
 		} else if words[0] == "/m" && len(words) > 2 {
 			return fmt.Sprintf("PRIVMSG %s :%s", words[1], strings.Join(words[2:], " ")), true
+		} else if words[0] == "/c" && len(words) > 2 {
+			return fmt.Sprintf("PRIVMSG %s :\x01%s\x01", words[1], strings.Join(words[2:], " ")), true
 		} else if words[0] == "/N" && len(words) > 2 {
 			return fmt.Sprintf("NOTICE %s :%s", words[1], strings.Join(words[2:], " ")), true
 		} else if words[0] == "/n" && len(words) > 1 {
 			return fmt.Sprintf("NICK %s", words[1]), true
+		} else if words[0] == "/me" && len(words) > 1 {
+			return fmt.Sprintf("PRIVMSG %s :\x01ACTION %s\x01", target, strings.Join(words[1:], " ")), true
 		} else if text[1] == '/' {
 			return fmt.Sprintf("PRIVMSG %s :%s", target, strings.Replace(text, "/", "", 1)), true
 		} else {
-			fmt.Printf("Unknown command %s (%d args)\n", words[0], len(words) - 1)
+			fmt.Printf("Unknown command %s (%d args)\n", words[0], len(words)-1)
 			return "", false
 		}
 	}

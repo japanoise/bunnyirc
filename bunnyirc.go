@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"gopkg.in/sorcix/irc.v2"
+	"strings"
 )
 
 type Client struct {
@@ -38,6 +39,16 @@ func (c Client) Receive() (*irc.Message, error) {
 	if msg.Command == "PING" {
 		pong := fmt.Sprintf("PONG :%s", msg.Params[0])
 		c.Conn.Encode(irc.ParseMessage(pong))
+	} else if msg.Command == "PRIVMSG" && msg.Params[1][0] == '\x01' {
+		msg.Command = "CTCP"
+		msg.Params[1] = strings.Replace(msg.Params[1], "\x01", "", -1)
+		if msg.Params[1] == "VERSION" {
+			reply := fmt.Sprintf("NOTICE %s :%s", msg.Prefix.Name, "\x01VERSION Bunnyirc (https://github.com/japanoise/bunnyirc)\x01")
+			c.Conn.Encode(irc.ParseMessage(reply))
+		}
+	} else if msg.Command == "NOTICE" && msg.Params[1][0] == '\x01' {
+		msg.Command = "CTCPREPLY"
+		msg.Params[1] = strings.Replace(msg.Params[1], "\x01", "", -1)
 	}
 	return msg, err
 }
