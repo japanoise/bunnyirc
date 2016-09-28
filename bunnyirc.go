@@ -45,6 +45,9 @@ func (c Client) Receive() (*irc.Message, error) {
 		if msg.Params[1] == "VERSION" {
 			reply := fmt.Sprintf("NOTICE %s :%s", msg.Prefix.Name, "\x01VERSION Bunnyirc (https://github.com/japanoise/bunnyirc)\x01")
 			c.Conn.Encode(irc.ParseMessage(reply))
+		} else if strings.HasPrefix(msg.Params[1], "PING") {
+			reply := fmt.Sprintf("NOTICE %s :\x01%s\x01", msg.Prefix.Name, msg.Params[1])
+			c.Conn.Encode(irc.ParseMessage(reply))
 		}
 	} else if msg.Command == "NOTICE" && msg.Params[1][0] == '\x01' {
 		msg.Command = "CTCPREPLY"
