@@ -99,7 +99,7 @@ func Command(client *Client, text string) bool {
 	return false
 }
 
-func readloop(client *Client) {
+func inputloop(client *Client) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		text, err := reader.ReadString('\n')
@@ -112,7 +112,7 @@ func readloop(client *Client) {
 	}
 }
 
-func printloop(client *Client) {
+func outputloop(client *Client) {
 	for {
 		msg, err := client.Receive()
 		if err != nil {
@@ -139,6 +139,6 @@ func main() {
 		log.Fatalln("Could not connect to IRC server; ", err.Error())
 	}
 	client.Auth()
-	go printloop(client)
-	readloop(client)
+	go outputloop(client)
+	inputloop(client)
 }
