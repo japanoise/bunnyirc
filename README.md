@@ -35,6 +35,7 @@ Output takes the form of (barely) formatted messages from the server. Not all me
 - /m - Send a PRIVMSG
 - /me - Send a CTCP ACTION
 - /j - Join a channel
+- /q - Send QUIT with optional reason
 - /n - Change nick
 - /c - Send a CTCP request
 - /t - Set the target
