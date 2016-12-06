@@ -43,3 +43,9 @@ Output takes the form of (barely) formatted messages from the server. Not all me
 - // - Send a message beginning with a /
 
 If you don't give a command, the input will be sent to the current target as a PRIVMSG.
+
+## Timestamps
+
+Do it unix style!
+
+    bunnyirc | sed -e"s/^/$(date +%H:%M:%S) /"
