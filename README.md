@@ -36,6 +36,7 @@ as of right now, bunnyirc outputs delicious raw irc messages!
 - /m - Send a PRIVMSG
 - /me - Send a CTCP ACTION
 - /j - Join a channel
+- /q - Send QUIT with optional reason
 - /n - Change nick
 - /c - Send a CTCP request
 - /t - Set the target
@@ -43,3 +44,9 @@ as of right now, bunnyirc outputs delicious raw irc messages!
 - // - Send a message beginning with a /
 
 If you don't give a command, the input will be sent to the current target as a PRIVMSG.
+
+## Timestamps
+
+Do it unix style!
+
+    bunnyirc | sed -e"s/^/$(date +%H:%M:%S) /"
