@@ -15,40 +15,7 @@ import (
 var target string
 
 func printmsg(msg *irc.Message) {
-	switch msg.Command {
-	case "JOIN":
-		fmt.Printf("%s has joined %s\n", msg.Prefix.Name, msg.Params[0])
-	case "PRIVMSG":
-		fmt.Printf("%s/%s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
-	case "MODE":
-		fmt.Printf("%s sets mode %s\n", msg.Prefix.Name, strings.Join(msg.Params[0:], " "))
-	case "NOTICE":
-		fmt.Printf("Notice from %s to %s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
-	case "001":
-		fallthrough
-	case "002":
-		fallthrough
-	case "003":
-		fallthrough
-	case "372":
-		fallthrough
-	case "375":
-		fallthrough
-	case "376":
-		fmt.Println(msg.Params[1])
-	case "QUIT":
-		fmt.Printf("%s has quit (%s)\n", msg.Prefix.Name, msg.Params[0])
-	case "CTCP":
-		if strings.HasPrefix(msg.Params[1], "ACTION") {
-			fmt.Printf("%s: * %s %s\n", msg.Params[0], msg.Prefix.Name, msg.Params[1][7:])
-		} else {
-			fmt.Printf("CTCP request from %s to %s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
-		}
-	case "CTCPREPLY":
-		fmt.Printf("CTCP reply from %s to %s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
-	default:
-		fmt.Println("RAW:", msg.String())
-	}
+	fmt.Println(msg.String())
 }
 
 func Parse(text string) (string, bool) {

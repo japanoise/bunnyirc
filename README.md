@@ -2,10 +2,11 @@
 
 >IRC! Internet relay chat! It's how hackers communicate when they don't wanna be overheard.
 
-bunnyirc is an irc client written in Go, inspired by 9front's ircrc. It accepts commands from stdin and outputs to stdout. Unlike its big brother, it can handle basic CTCP. Support for MIRC colours may or may not be coming.
+bunnyirc is an irc client written in Go, inspired by 9front's ircrc. It accepts commands from stdin and outputs to stdout. Unlike its big brother, it can handle basic CTCP.
 
-Output takes the form of (barely) formatted messages from the server. Not all messages are handled, so expect to see a raw message once in a while. Despite this simplicity, I think it's a nice and perfectly servicable client.
-
+bunnyirc used to contain barebones formatting code. However, in the spirit of
+the UNIX philosophy, I believe this should be done by an external program. So
+as of right now, bunnyirc outputs delicious raw irc messages!
 
 ## Usage of bunnyirc:
 
