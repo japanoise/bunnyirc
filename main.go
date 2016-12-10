@@ -86,9 +86,11 @@ func outputloop(client *Client) {
 			fmt.Println("Output loop closing:", err)
 			return
 		}
-		printmsg(msg)
-		if msg.Command == "ERROR" {
-			return
+		if msg != nil {
+			printmsg(msg)
+			if msg.Command == "ERROR" {
+				return
+			}
 		}
 	}
 }

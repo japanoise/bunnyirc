@@ -42,7 +42,9 @@ func (c Client) Send(msg *irc.Message) {
 
 func (c Client) Receive() (*irc.Message, error) {
 	msg, err := c.Conn.Decode()
-	if msg.Command == "PING" {
+	if msg == nil {
+		return nil, nil
+	} else if msg.Command == "PING" {
 		pong := fmt.Sprintf("PONG :%s", msg.Params[0])
 		c.Conn.Encode(irc.ParseMessage(pong))
 	} else if msg.Command == "PRIVMSG" && msg.Params[1][0] == '\x01' {
