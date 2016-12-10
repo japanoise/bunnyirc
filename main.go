@@ -96,16 +96,24 @@ func outputloop(client *Client) {
 func main() {
 	current, _ := user.Current()
 	nick := flag.String("n", current.Username, "Nickname")
+	pass := flag.String("P", "", "Connection Password")
 	user := flag.String("u", current.Username, "Username")
 	server := flag.String("s", "chat.freenode.net", "Server to connect to")
 	port := flag.Int("p", 6667, "Port to use")
 	usetls := flag.Bool("z", false, "Use TLS")
+	noverify := flag.Bool("v", false, "Skip TLS connection verification")
 	flag.Parse()
-	client, err := New(*usetls, fmt.Sprint(*server, ":", *port), *nick, *user)
+	client, err := New(TlsCon{*usetls, *noverify},
+		fmt.Sprint(*server, ":", *port), *nick, *user)
 	if err != nil {
 		log.Fatalln("Could not connect to IRC server; ", err.Error())
 	}
-	client.Auth()
+	fmt.Println("Ok, let's auth!")
+	if *pass == "" {
+		client.Auth()
+	} else {
+		client.Authpass(*pass)
+	}
 	go outputloop(client)
 	inputloop(client)
 }

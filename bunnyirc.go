@@ -15,18 +15,24 @@ type Client struct {
 	Conn    *irc.Conn
 }
 
-func New(usetls bool, details, nick, user string) (*Client, error) {
+type TlsCon struct {
+	Usetls   bool
+	NoVerify bool
+}
+
+func New(tc TlsCon, details, nick, user string) (*Client, error) {
 	var ret Client
 	var conn *irc.Conn
 	var tconn *tls.Conn
 	var err error
-	if usetls {
-		tconn, err = tls.Dial("tcp", details, &tls.Config{})
+	if tc.Usetls {
+		tconn, err = tls.Dial("tcp", details,
+			&tls.Config{InsecureSkipVerify: tc.NoVerify})
 		conn = irc.NewConn(tconn)
 	} else {
 		conn, err = irc.Dial(details)
 	}
-	ret = Client{usetls, details, nick, user, conn}
+	ret = Client{tc.Usetls, details, nick, user, conn}
 	return &ret, err
 }
 
@@ -58,6 +64,12 @@ func (c Client) Receive() (*irc.Message, error) {
 
 func (c Client) Close() {
 	c.Close()
+}
+
+func (c Client) Authpass(pass string) {
+	c.Conn.Encode(&irc.Message{Command: "PASS", Params: []string{pass}})
+	c.Conn.Encode(irc.ParseMessage(fmt.Sprintf("NICK %s", c.Nick)))
+	c.Conn.Encode(irc.ParseMessage(fmt.Sprintf("USER %s * * :%s", c.User, c.User)))
 }
 
 func (c Client) Auth() {
