@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/nsf/termbox-go"
 	"gopkg.in/sorcix/irc.v2"
+	"regexp"
 	"strings"
 )
 
@@ -131,7 +132,9 @@ func GetString() string {
 }
 
 func sendtobuffer(str string) {
-	buffer = append(buffer, str)
+	/* Strip mirc colors. Whoever came up with these was pure evil. */
+	mirc := regexp.MustCompile("\x03[0-9]?[0-9]?(,[0-9][0-9]?)?|\x02|\x1D|\x1F|\x16|\x0F")
+	buffer = append(buffer, mirc.ReplaceAllLiteralString(str, ""))
 	if len(buffer) > cap(buffer)-2 {
 		/* Reverse arrays are an ugly hack. This should be a stack. */
 		buffer = buffer[1:]
