@@ -19,7 +19,7 @@ func printmsg(msg *irc.Message) {
 }
 
 func Parse(text string) (string, bool) {
-	if text[0] == '/' {
+	if text[0] == '/' && len(text) > 1 {
 		words := strings.Split(text, " ")
 		if words[0] == "/q" {
 			if len(words) > 1 {
