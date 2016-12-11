@@ -1,22 +1,15 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"gopkg.in/sorcix/irc.v2"
-	"io"
 	"log"
-	"os"
 	"os/user"
 	"strings"
 )
 
 var target string
-
-func printmsg(msg *irc.Message) {
-	fmt.Println(msg.String())
-}
 
 func Parse(text string) (string, bool) {
 	if text[0] == '/' && len(text) > 1 {
@@ -66,35 +59,6 @@ func Command(client *Client, text string) bool {
 	return false
 }
 
-func inputloop(client *Client) {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		text, err := reader.ReadString('\n')
-		if err == io.EOF {
-			return
-		}
-		if Command(client, text) {
-			return
-		}
-	}
-}
-
-func outputloop(client *Client) {
-	for {
-		msg, err := client.Receive()
-		if err != nil {
-			fmt.Println("Output loop closing:", err)
-			return
-		}
-		if msg != nil {
-			printmsg(msg)
-			if msg.Command == "ERROR" {
-				return
-			}
-		}
-	}
-}
-
 func main() {
 	current, _ := user.Current()
 	nick := flag.String("n", current.Username, "Nickname")
@@ -104,6 +68,7 @@ func main() {
 	port := flag.Int("p", 6667, "Port to use")
 	usetls := flag.Bool("z", false, "Use TLS")
 	noverify := flag.Bool("v", false, "Skip TLS connection verification")
+	scrollback := flag.Int("S", 10000, "Number of messages to keep in scrollback")
 	flag.Parse()
 	client, err := New(TlsCon{*usetls, *noverify},
 		fmt.Sprint(*server, ":", *port), *nick, *user)
@@ -115,6 +80,7 @@ func main() {
 	} else {
 		client.Authpass(*pass)
 	}
-	go outputloop(client)
+	initscreen()
+	go outputloop(client, *scrollback)
 	inputloop(client)
 }
