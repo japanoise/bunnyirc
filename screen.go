@@ -158,7 +158,9 @@ func outputloop(client *Client, scrollback int) {
 			return
 		}
 		if msg != nil {
-			printmsg(msg)
+			if msg.Command != "PING" {
+				printmsg(msg)
+			}
 			if msg.Command == "ERROR" {
 				return
 			}
