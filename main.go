@@ -110,7 +110,6 @@ func main() {
 	if err != nil {
 		log.Fatalln("Could not connect to IRC server; ", err.Error())
 	}
-	fmt.Println("Ok, let's auth!")
 	if *pass == "" {
 		client.Auth()
 	} else {
