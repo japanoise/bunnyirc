@@ -5,6 +5,7 @@ import (
 	"github.com/nsf/termbox-go"
 	"gopkg.in/sorcix/irc.v2"
 	"strings"
+	"unicode/utf8"
 )
 
 var buffer []string
@@ -122,7 +123,9 @@ func GetString() string {
 				fallthrough
 			case termbox.KeyBackspace:
 				if cursor > 0 {
-					retval = retval[0 : len(retval)-1]
+					_, rs :=
+					utf8.DecodeLastRuneInString(retval)
+					retval = retval[0 : len(retval)-rs]
 					eraseCh(cursor+1, height-1)
 					cursor--
 				}
