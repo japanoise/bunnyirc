@@ -105,10 +105,11 @@ func GetString() string {
 	clearLine(height-1, width)
 	retval := ""
 	cursor := 0
-	drawString(0, height-1, ">")
+	tlen := len(target) + 3
+	drawString(0, height-1, fmt.Sprint(target, " >"))
 	for {
-		drawString(2, height-1, retval)
-		termbox.SetCursor(2+cursor, height-1)
+		drawString(tlen, height-1, retval)
+		termbox.SetCursor(tlen+cursor, height-1)
 		termbox.Flush()
 		ev := termbox.PollEvent()
 		if ev.Ch == 0 {
@@ -128,7 +129,7 @@ func GetString() string {
 					_, rs :=
 						utf8.DecodeLastRuneInString(retval)
 					retval = retval[0 : len(retval)-rs]
-					eraseCh(cursor+1, height-1)
+					eraseCh(cursor+(tlen-1), height-1)
 					cursor--
 				}
 			}
@@ -179,7 +180,7 @@ func inputloop(client *Client) {
 	defer termbox.Close()
 	for {
 		text := GetString()
-		sendtobuffer(text)
+		sendtobuffer(fmt.Sprint("(", target, ") ", text))
 		updatescreen()
 		if Command(client, text) {
 			return
