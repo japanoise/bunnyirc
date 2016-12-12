@@ -3,8 +3,8 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
-	"regexp"
 	"gopkg.in/sorcix/irc.v2"
+	"regexp"
 	"strings"
 )
 

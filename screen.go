@@ -61,7 +61,7 @@ func printstring(str string, anchor, width int) int {
 	retval--
 	y := retval
 	clearLine(y, width)
-	i:=0
+	i := 0
 	for _, runeValue := range str {
 		if i%width == 0 && i >= width {
 			y++
@@ -124,7 +124,7 @@ func GetString() string {
 			case termbox.KeyBackspace:
 				if cursor > 0 {
 					_, rs :=
-					utf8.DecodeLastRuneInString(retval)
+						utf8.DecodeLastRuneInString(retval)
 					retval = retval[0 : len(retval)-rs]
 					eraseCh(cursor+1, height-1)
 					cursor--
