@@ -16,10 +16,10 @@ goes to one place - the output window - implemented using Termbox.
 
 ## Possible future features
 
-- Nick colors. This wouldn't be too difficult to do. It improves the reading experience as you
-  can visually differentiate people quicker.
-- Timestamps. You could previously do this with pipes, but not any more! Shouldn't be too hard
-  to implement, however.
+- Nick colors. This wouldn't be too difficult to do. It improves the reading
+  experience as you can visually differentiate people quicker.
+- Timestamps. You could previously do this with pipes, but not any more!
+  Shouldn't be too hard to implement, however.
 
 ## Anti-features
 
@@ -29,7 +29,8 @@ goes to one place - the output window - implemented using Termbox.
   from multiple buffers.
 - DCC - this is potentially dangerous, and an abuse of the irc protocol.
 - mIRC-style formatting - No.
-- Multiple servers - This would clutter the output. A suggested solution is to use a screenrc:
+- Multiple servers - This would clutter the output. A suggested solution is to
+  use a screenrc:
 
 ~~~
 # Allow real scrolling
@@ -57,7 +58,7 @@ hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u
   -p int
 
     	Port to use (default 6667)
-      
+
   -P int
 
     	Connection password
@@ -70,12 +71,12 @@ hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u
 
     	Username (defaults to your login name)
 
-  -z	
-  
+  -z
+
       	Use TLS
-        
-  -v	
-  
+
+  -v
+
       	Skip TLS connection verification
 
 ## Commands
@@ -91,4 +92,5 @@ hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u
 - /r - Send a raw irc command
 - // - Send a message beginning with a /
 
-If you don't give a command, the input will be sent to the current target as a PRIVMSG.
+If you don't give a command, the input will be sent to the current target as a
+PRIVMSG.
