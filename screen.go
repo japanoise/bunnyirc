@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/list"
 	"fmt"
 	"github.com/nsf/termbox-go"
 	"gopkg.in/sorcix/irc.v2"
@@ -8,7 +9,8 @@ import (
 	"unicode/utf8"
 )
 
-var buffer []string
+var buffer *list.List
+var limit int
 
 func formatmessage(msg *irc.Message) string {
 	switch msg.Command {
@@ -76,10 +78,10 @@ func printstring(str string, anchor, width int) int {
 func updatescreen() {
 	width, height := termbox.Size()
 	anchor := height - 2
-	i := len(buffer) - 1
-	for anchor > 0 && i >= 0 {
-		anchor = printstring(buffer[i], anchor, width)
-		i--
+	i := buffer.Front()
+	for anchor > 0 && i != nil {
+		anchor = printstring(i.Value.(string), anchor, width)
+		i = i.Next()
 	}
 	termbox.Flush()
 }
@@ -138,10 +140,9 @@ func GetString() string {
 }
 
 func sendtobuffer(str string) {
-	buffer = append(buffer, StripMircFormatting(str))
-	if len(buffer) > cap(buffer)-2 {
-		/* Reverse arrays are an ugly hack. This should be a stack. */
-		buffer = buffer[1:]
+	buffer.PushFront(StripMircFormatting(str))
+	if buffer.Len() > limit {
+		buffer.Remove(buffer.Back())
 	}
 }
 
@@ -154,7 +155,8 @@ func initscreen() {
 }
 
 func outputloop(client *Client, scrollback int) {
-	buffer = make([]string, 0, scrollback)
+	limit = scrollback
+	buffer = list.New()
 	for {
 		msg, err := client.Receive()
 		if err != nil {
