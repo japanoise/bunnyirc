@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
+	"regexp"
 	"gopkg.in/sorcix/irc.v2"
 	"strings"
 )
@@ -83,4 +84,9 @@ func (c Client) Auth() {
 			return
 		}
 	}
+}
+
+func StripMircFormatting(msg string) string {
+	mirc := regexp.MustCompile("\x03[0-9]?[0-9]?(,[0-9][0-9]?)?|\x02|\x1D|\x1F|\x16|\x0F")
+	return mirc.ReplaceAllLiteralString(msg, "")
 }
