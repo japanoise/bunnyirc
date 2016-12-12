@@ -48,8 +48,10 @@ func formatmessage(msg *irc.Message) string {
 
 /* This function should really be in termbox... */
 func drawString(x, y int, str string) {
-	for i, runeValue := range str {
+	i := 0
+	for _, runeValue := range str {
 		putCh(x+i, y, runeValue)
+		i++
 	}
 }
 
@@ -58,12 +60,14 @@ func printstring(str string, anchor, width int) int {
 	retval--
 	y := retval
 	clearLine(y, width)
-	for i, runeValue := range str {
+	i:=0
+	for _, runeValue := range str {
 		if i%width == 0 && i >= width {
 			y++
 			clearLine(y, width)
 		}
 		putCh(i%width, y, runeValue)
+		i++
 	}
 	return retval
 }
