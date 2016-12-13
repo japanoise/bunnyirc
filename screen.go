@@ -13,15 +13,19 @@ var buffer *list.List
 var limit int
 
 func formatmessage(msg *irc.Message) string {
+	prefix := msg.Prefix
+	if prefix == nil {
+		prefix = &irc.Prefix{"unknown","unknown","unknown",}
+	}
 	switch msg.Command {
 	case "JOIN":
-		return fmt.Sprintf("%s has joined %s\n", msg.Prefix.Name, msg.Params[0])
+		return fmt.Sprintf("%s has joined %s\n", prefix.Name, msg.Params[0])
 	case "PRIVMSG":
-		return fmt.Sprintf("%s ─→ %s: %s\n", msg.Prefix.Name, strings.TrimSpace(msg.Params[0]), msg.Params[1])
+		return fmt.Sprintf("%s ─→ %s: %s\n", prefix.Name, strings.TrimSpace(msg.Params[0]), msg.Params[1])
 	case "MODE":
-		return fmt.Sprintf("%s sets mode %s\n", msg.Prefix.Name, strings.Join(msg.Params[0:], " "))
+		return fmt.Sprintf("%s sets mode %s\n", prefix.Name, strings.Join(msg.Params[0:], " "))
 	case "NOTICE":
-		return fmt.Sprintf("Notice from %s to %s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
+		return fmt.Sprintf("Notice from %s to %s: %s\n", prefix.Name, msg.Params[0], msg.Params[1])
 	case "001":
 		fallthrough
 	case "002":
@@ -35,15 +39,15 @@ func formatmessage(msg *irc.Message) string {
 	case "376":
 		return fmt.Sprintln(msg.Params[1])
 	case "QUIT":
-		return fmt.Sprintf("%s has quit (%s)\n", msg.Prefix.Name, msg.Params[0])
+		return fmt.Sprintf("%s has quit (%s)\n", prefix.Name, msg.Params[0])
 	case "CTCP":
 		if strings.HasPrefix(msg.Params[1], "ACTION") {
-			return fmt.Sprintf("%s: * %s %s\n", msg.Params[0], msg.Prefix.Name, msg.Params[1][7:])
+			return fmt.Sprintf("%s: * %s %s\n", msg.Params[0], prefix.Name, msg.Params[1][7:])
 		} else {
-			return fmt.Sprintf("CTCP request from %s to %s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
+			return fmt.Sprintf("CTCP request from %s to %s: %s\n", prefix.Name, msg.Params[0], msg.Params[1])
 		}
 	case "CTCPREPLY":
-		return fmt.Sprintf("CTCP reply from %s to %s: %s\n", msg.Prefix.Name, msg.Params[0], msg.Params[1])
+		return fmt.Sprintf("CTCP reply from %s to %s: %s\n", prefix.Name, msg.Params[0], msg.Params[1])
 	default:
 		return fmt.Sprint("RAW:", msg.String())
 	}
