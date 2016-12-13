@@ -3,8 +3,8 @@ package main
 import (
 	"container/list"
 	"fmt"
-	"github.com/nsf/termbox-go"
 	"github.com/mattn/go-runewidth"
+	"github.com/nsf/termbox-go"
 	"gopkg.in/sorcix/irc.v2"
 	"strings"
 	"unicode/utf8"
@@ -16,7 +16,7 @@ var limit int
 func formatmessage(msg *irc.Message) string {
 	prefix := msg.Prefix
 	if prefix == nil {
-		prefix = &irc.Prefix{"unknown","unknown","unknown",}
+		prefix = &irc.Prefix{"unknown", "unknown", "unknown"}
 	}
 	switch msg.Command {
 	case "JOIN":
@@ -59,7 +59,7 @@ func drawString(x, y int, str string) {
 	i := 0
 	for _, runeValue := range str {
 		putCh(x+i, y, runeValue)
-		i+=runewidth.RuneWidth(runeValue)
+		i += runewidth.RuneWidth(runeValue)
 	}
 }
 
@@ -75,7 +75,7 @@ func printstring(str string, anchor, width int) int {
 			clearLine(y, width)
 		}
 		putCh(i%width, y, runeValue)
-		i+=runewidth.RuneWidth(runeValue)
+		i += runewidth.RuneWidth(runeValue)
 	}
 	return retval
 }
