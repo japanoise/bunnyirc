@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"fmt"
 	"github.com/nsf/termbox-go"
+	"github.com/mattn/go-runewidth"
 	"gopkg.in/sorcix/irc.v2"
 	"strings"
 	"unicode/utf8"
@@ -58,7 +59,7 @@ func drawString(x, y int, str string) {
 	i := 0
 	for _, runeValue := range str {
 		putCh(x+i, y, runeValue)
-		i++
+		i+=runewidth.RuneWidth(runeValue)
 	}
 }
 
@@ -74,7 +75,7 @@ func printstring(str string, anchor, width int) int {
 			clearLine(y, width)
 		}
 		putCh(i%width, y, runeValue)
-		i++
+		i+=runewidth.RuneWidth(runeValue)
 	}
 	return retval
 }
@@ -130,16 +131,16 @@ func GetString() string {
 				fallthrough
 			case termbox.KeyBackspace:
 				if cursor > 0 {
-					_, rs :=
+					r, rs :=
 						utf8.DecodeLastRuneInString(retval)
 					retval = retval[0 : len(retval)-rs]
-					eraseCh(cursor+(tlen-1), height-1)
-					cursor--
+					eraseCh(cursor+(tlen)-runewidth.RuneWidth(r), height-1)
+					cursor -= runewidth.RuneWidth(r)
 				}
 			}
 		} else if ev.Ch > 31 {
 			retval += string(ev.Ch)
-			cursor++
+			cursor += runewidth.RuneWidth(ev.Ch)
 		}
 	}
 }
