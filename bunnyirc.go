@@ -21,6 +21,54 @@ type TlsCon struct {
 	NoVerify bool
 }
 
+func Parse(text string) (string, bool) {
+	if text[0] == '/' && len(text) > 1 {
+		words := strings.Split(text, " ")
+		if words[0] == "/q" {
+			if len(words) > 1 {
+				return fmt.Sprintf("QUIT :%s", strings.Join(words[1:], " ")), true
+			} else {
+				return "QUIT :Bunnyirc", true
+			}
+		} else if words[0] == "/t" && len(words) > 1 {
+			target = words[1]
+			return "", false
+		} else if words[0] == "/r" && len(words) > 1 {
+			return strings.Join(words[1:], " "), true
+		} else if words[0] == "/j" && len(words) > 1 {
+			return fmt.Sprintf("JOIN %s", words[1]), true
+		} else if words[0] == "/m" && len(words) > 2 {
+			return fmt.Sprintf("PRIVMSG %s :%s", words[1], strings.Join(words[2:], " ")), true
+		} else if words[0] == "/c" && len(words) > 2 {
+			return fmt.Sprintf("PRIVMSG %s :\x01%s\x01", words[1], strings.Join(words[2:], " ")), true
+		} else if words[0] == "/N" && len(words) > 2 {
+			return fmt.Sprintf("NOTICE %s :%s", words[1], strings.Join(words[2:], " ")), true
+		} else if words[0] == "/n" && len(words) > 1 {
+			return fmt.Sprintf("NICK %s", words[1]), true
+		} else if words[0] == "/me" && len(words) > 1 {
+			return fmt.Sprintf("PRIVMSG %s :\x01ACTION %s\x01", target, strings.Join(words[1:], " ")), true
+		} else if text[1] == '/' {
+			return fmt.Sprintf("PRIVMSG %s :%s", target, strings.Replace(text, "/", "", 1)), true
+		} else {
+			fmt.Printf("Unknown command %s (%d args)\n", words[0], len(words)-1)
+			return "", false
+		}
+	}
+	return fmt.Sprintf("PRIVMSG %s :%s", target, text), target != ""
+}
+
+func Command(client *Client, text string) bool {
+	send, dosend := Parse(strings.Replace(text, "\n", "", -1))
+	if dosend {
+		msg := irc.ParseMessage(send)
+		if msg != nil {
+			client.Send(msg)
+			return msg.Command == "QUIT"
+		}
+	}
+	return false
+}
+
 func New(tc TlsCon, details, nick, user string) (*Client, error) {
 	var ret Client
 	var conn *irc.Conn
