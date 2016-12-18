@@ -22,7 +22,7 @@ func formatmessage(msg *irc.Message) string {
 	case "JOIN":
 		return fmt.Sprintf("%s has joined %s\n", prefix.Name, msg.Params[0])
 	case "PRIVMSG":
-		return fmt.Sprintf("%s ─→ %s: %s\n", prefix.Name, strings.TrimSpace(msg.Params[0]), msg.Params[1])
+		return fmt.Sprintf("(%s) %s: %s\n", msg.Params[0], prefix.Name, msg.Params[1])
 	case "MODE":
 		return fmt.Sprintf("%s sets mode %s\n", prefix.Name, strings.Join(msg.Params[0:], " "))
 	case "NOTICE":
