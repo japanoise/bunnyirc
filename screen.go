@@ -43,7 +43,7 @@ func formatmessage(msg *irc.Message) string {
 		return fmt.Sprintf("%s has quit (%s)\n", prefix.Name, msg.Params[0])
 	case "CTCP":
 		if strings.HasPrefix(msg.Params[1], "ACTION") {
-			return fmt.Sprintf("%s: * %s %s\n", msg.Params[0], prefix.Name, msg.Params[1][7:])
+			return fmt.Sprintf("(%s) * %s %s\n", msg.Params[0], prefix.Name, msg.Params[1][7:])
 		} else {
 			return fmt.Sprintf("CTCP request from %s to %s: %s\n", prefix.Name, msg.Params[0], msg.Params[1])
 		}
